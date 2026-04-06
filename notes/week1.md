@@ -1,383 +1,446 @@
-# 📓 Заметки: Неделя 2 — pytest основы
+# 📓 Заметки: Неделя 1 — Фундамент: окружение, Git, первые тесты
 
 ## 📋 ОГЛАВЛЕНИЕ
 
-- [pytest — база](#-pytest--база)
-- [Фикстуры](#-фикстуры)
-- [Параметризация](#-параметризация)
-- [conftest.py](#-conftestpy)
-- [Маркеры и селективный запуск](#-маркеры-и-селективный-запуск)
-- [Для собеседования](#-для-собеседования)
-- [Вопросы для самопроверки](#-вопросы-для-самопроверки)
+- [Python и окружение](#python-и-окружение)
+- [Виртуальное окружение (venv)](#виртуальное-окружение-venv)
+- [Git — базовые команды](#git--базовые-команды)
+- [.gitignore](#gitignore)
+- [Структура проекта](#структура-проекта)
+- [Первые тесты: калькулятор](#первые-тесты-калькулятор)
+- [Запуск тестов с pytest](#запуск-тестов-с-pytest)
+- [GitHub: первый пуш](#github-первый-пуш)
+- [Для собеседования](#для-собеседования)
+- [Вопросы для самопроверки](#вопросы-для-самопроверки)
+- [Ссылки](#ссылки)
 
 ---
 
-## 🧪 PYTEST — БАЗА
+## 🐍 PYTHON И ОКРУЖЕНИЕ
 
-### Конвенции именования
+### Установка Python на Windows
 
-- **Файлы:** `test_*.py` или `*_test.py`
-- **Функции:** `def test_*():`
-- **Классы:** `class Test*` (без `__init__`)
+1. Скачай с [python.org/downloads](https://www.python.org/downloads/)
+2. Запусти установщик
+3. ⚠️ **Поставь галочку:** `Add Python to PATH`
+4. Нажми `Install Now`
 
-### Запуск тестов
+### Проверка установки
+
+```cmd
+python --version
+# Ожидаемый результат: Python 3.11.x
+```
+
+### Установка редактора
+
+**VS Code** (рекомендуется) или **PyCharm Community**.
+
+**Полезные расширения для VS Code:**
+- Python (Microsoft)
+- Pylance
+- GitLens
+- pytest
+
+---
+
+## 📦 ВИРТУАЛЬНОЕ ОКРУЖЕНИЕ (VENV)
+
+### Зачем нужно
+
+Изолирует зависимости проекта от системного Python.
+
+### Создание и активация
+
+```cmd
+# Перейди в папку проекта
+cd Desktop\python-automation-learning
+
+# Создай виртуальное окружение
+python -m venv venv
+
+# Активируй (Windows)
+venv\Scripts\activate
+
+# Проверка: должен появиться префикс (venv)
+(venv) C:\...\python-automation-learning>
+```
+
+### Работа с пакетами
+
+```cmd
+# Установка pytest
+pip install pytest pytest-html
+
+# Просмотр установленных пакетов
+pip list
+
+# Сохранение зависимостей
+pip freeze > requirements.txt
+
+# Установка из файла
+pip install -r requirements.txt
+
+# Деактивация окружения
+deactivate
+```
+
+### Частые команды
+
+| Команда | Что делает |
+|---------|-----------|
+| `python -m venv venv` | Создаёт окружение в папке venv/ |
+| `venv\Scripts\activate` | Активирует окружение |
+| `deactivate` | Выход из окружения |
+| `pip install <package>` | Устанавливает пакет |
+| `pip freeze > requirements.txt` | Сохраняет список пакетов |
+| `where python` | Показывает путь к активному Python |
+
+---
+
+## 📦 GIT — БАЗОВЫЕ КОМАНДЫ
+
+### Первоначальная настройка
+
+```cmd
+git config --global user.name "Твоё Имя"
+git config --global user.email "твоя@почта.com"
+```
+
+### Основные команды
+
+```cmd
+# Инициализация репозитория
+git init
+
+# Проверка статуса
+git status
+
+# Добавление файлов
+git add .                    # все файлы
+git add <файл>              # конкретный файл
+
+# Коммит
+git commit -m "feat: сообщение"
+
+# Просмотр истории
+git log
+git log --oneline           # кратко
+
+# Отправка на GitHub
+git push -u origin main
+```
+
+### Префиксы коммитов
+
+| Префикс | Когда использовать |
+|---------|-------------------|
+| `feat:` | Новая функция |
+| `fix:` | Исправление бага |
+| `docs:` | Изменения в документации |
+| `refactor:` | Рефакторинг кода |
+| `test:` | Добавление тестов |
+| `chore:` | Настройка, конфиги |
+
+**Пример:**
+
+```cmd
+git commit -m "feat: add calculator functions"
+git commit -m "fix: handle division by zero"
+```
+
+---
+
+## 📄 .GITIGNORE
+
+### Зачем нужен
+
+Чтобы не коммитить мусор: временные файлы, окружение, секреты.
+
+### Что добавить для Python-проекта
+
+```
+# Виртуальное окружение
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Тесты и отчёты
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+report.html
+
+# Логи и временные файлы
+*.log
+logs/
+tmp/
+temp/
+
+# Секреты
+.env
+.env.local
+*.key
+*.pem
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ОС
+.DS_Store
+Thumbs.db
+```
+
+### Если файл уже в Git
+
+```cmd
+# Удалить из отслеживания, но оставить на диске
+git rm -r --cached __pycache__/
+git commit -m "chore: remove __pycache__ from tracking"
+```
+
+---
+
+## 📁 СТРУКТУРА ПРОЕКТА
+
+```
+python-automation-learning/
+├── src/
+│   └── calculator.py       # Функции калькулятора
+├── tests/
+│   ├── conftest.py         # Фикстуры (позже)
+│   └── test_calculator.py  # Тесты
+├── .gitignore
+├── requirements.txt
+├── README.md
+└── notes/
+    └── week1.md
+```
+
+### Почему так
+
+- `src/` — исходный код, отдельно от тестов
+- `tests/` — тесты, легко находить
+- `conftest.py` — общие фикстуры для pytest
+- `.gitignore` — не коммитим мусор
+
+---
+
+## 🧪 ПЕРВЫЕ ТЕСТЫ: КАЛЬКУЛЯТОР
+
+### `src/calculator.py`
+
+```python
+def add(a, b):
+    """Сложение 2ух чисел"""
+    return a + b
+
+def subtract(a, b):
+    """Вычитание 2ух чисел"""
+    return a - b
+
+def multiply(a, b):
+    """Умножение 2ух чисел"""
+    return a * b
+
+def divide(a, b):
+    """Деление 2ух чисел"""
+    if b == 0:
+        raise ZeroDivisionError("Divide by zero")
+    return a / b
+
+def power(base, exponent):
+    """Возведение в степень"""
+    return base ** exponent
+```
+
+### `tests/test_calculator.py`
+
+```python
+import pytest
+import sys
+import os
+
+# Путь к src (чтобы работал импорт)
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')
+))
+
+from src.calculator import add, subtract, multiply, divide, power
+
+
+def test_add():
+    assert add(2, 3) == 5
+
+
+def test_subtract():
+    assert subtract(5, 3) == 2
+
+
+def test_multiply():
+    assert multiply(3, 4) == 12
+
+
+def test_divide():
+    assert divide(10, 2) == 5
+
+
+def test_divide_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        divide(5, 0)
+
+
+def test_power():
+    assert power(2, 3) == 8
+```
+
+### Почему `sys.path.insert`
+
+- Тесты лежат в `tests/`, код в `src/`
+- Python не видит `src/` по умолчанию
+- Эта строка добавляет корень проекта в путь поиска модулей
+
+---
+
+## 🧪 ЗАПУСК ТЕСТОВ С PYTEST
+
+### Базовые команды
 
 ```cmd
 pytest                    # все тесты
-pytest -v                 # подробно
-pytest -s                 # показать print()
+pytest -v                 # подробно (имена тестов)
+pytest -s                 # показать print() в тестах
 pytest -x                 # стоп на первой ошибке
-pytest -k "add"           # фильтр по имени
-pytest --maxfail=3        # стоп после 3 ошибок
-pytest --tb=short         # краткий стектрейс
+pytest -k "add"           # фильтр по имени теста
 pytest --html=report.html # HTML-отчёт
+```
+
+### Установка плагинов
+
+```cmd
+# HTML-отчёты
+pip install pytest-html
+
+# Allure (продвинутые отчёты)
+pip install allure-pytest
 ```
 
 ### Символы в отчёте
 
-- `.` = passed ✅
-- `F` = failed ❌
-- `E` = error 💥
-- `s` = skipped ⏭
-- `x` = xfail 🟣
-
-### Assert vs unittest
-
-**✅ pytest — просто:**
-
-```python
-assert add(2, 3) == 5
-```
-
-**❌ unittest — многословно:**
-
-```python
-self.assertEqual(add(2, 3), 5)
-```
+| Символ | Значение |
+|--------|----------|
+| `.` | ✅ passed |
+| `F` | ❌ failed |
+| `E` | 💥 error |
+| `s` | ⏭ skipped |
+| `x` | 🟣 xfail |
 
 ---
 
-## 🎁 ФИКСТУРЫ
+## 🐙 GITHUB: ПЕРВЫЙ ПУШ
 
-### Синтаксис
+### Создание репозитория
 
-```python
-import pytest
+1. Зайди на [github.com](https://github.com)
+2. Нажми `+` → `New repository`
+3. Имя: `python-automation-learning`
+4. ✅ Public
+5. ✅ Add README
+6. ✅ Add .gitignore → Python
+7. Нажми `Create repository`
 
-@pytest.fixture
-def my_fixture():
-    setup()
-    yield value      # тест получает это
-    teardown()       # выполнится всегда
-```
-
-### Scope (область видимости)
-
-| Scope | Когда создаётся | Пример |
-|-------|----------------|--------|
-| `function` (default) | Перед каждым тестом | Тестовые данные |
-| `class` | Один раз на класс | Тесты одного класса |
-| `module` | Один раз на файл | Дорогостоящие ресурсы |
-| `session` | Один раз на весь прогон | БД, браузер, API |
-
-```python
-@pytest.fixture(scope="session")
-def browser():
-    browser = Browser()
-    browser.launch()
-    yield browser
-    browser.close()  # закроется один раз после всех тестов
-```
-
-### conftest.py
-
-- ✅ Фикстуры доступны во всех тестах **без импорта**
-- ✅ Лежит в `tests/` или подпапках
-- ❌ **Не делится импортами**, только фикстурами!
-
-### Когда использовать ✅
-
-- Дорогостоящая настройка (БД, браузер, API)
-- Одинаковые сложные данные в 10+ тестах
-- Автоматическая очистка ресурсов
-- Моки и заглушки
-
-### Когда НЕ использовать ❌
-
-- Простые данные (числа, строки) — пиши явно в тесте
-- Когда фикстура скрывает смысл теста
-- Когда тест становится менее читаемым
-
-### Пример: ХОРОШО
-
-```python
-def test_add_two_positive_numbers():
-    """10 + 5 = 15"""
-    result = add(10, 5)
-    assert result == 15
-```
-
-### Пример: ПЛОХО
-
-```python
-def test_add(self, numbers):
-    result = add(numbers["a"], numbers["b"])
-    assert result == 15  # ??? Какие числа?
-```
-
----
-
-## 🎯 ПАРАМЕТРИЗАЦИЯ
-
-### Зачем нужна
-
-Один тест — много данных. Сокращает код в 3-10 раз.
-
-### Базовый синтаксис
-
-```python
-import pytest
-
-@pytest.mark.parametrize("a,b,expected", [
-    (2, 3, 5),
-    (10, 5, 15),
-    (-1, 1, 0),
-    (0, 0, 0),
-])
-def test_add(a, b, expected):
-    assert add(a, b) == expected
-```
-
-**Что происходит:**
-- Тест запустится 4 раза с разными данными
-- В отчёте увидишь: `test_add[2-3-5]`, `test_add[10-5-15]`, и т.д.
-
-### Несколько параметров
-
-```python
-@pytest.mark.parametrize("a,b,expected", [
-    (10, 5, 2),
-    (9, 3, 3),
-    (7, 2, 3.5),
-])
-def test_divide(a, b, expected):
-    assert divide(a, b) == expected
-```
-
-### Параметризация с фикстурами
-
-```python
-@pytest.mark.parametrize("a,b,expected", [
-    (10, 5, 15),
-    (0, 0, 0),
-    (-5, 5, 0),
-])
-def test_add_with_fixture(a, b, expected, calc):
-    """calc — фикстура из conftest.py"""
-    result = calc.add(a, b)
-    assert result == expected
-```
-
-### Когда параметризовать ✅
-
-- Одинаковая логика, разные данные
-- Пограничные значения (0, -1, None, пустая строка)
-- Таблицы данных из ТЗ
-
-### Когда НЕ параметризовать ❌
-
-- Разная логика в каждом случае
-- Когда названия тестов важнее экономии кода
-- Когда параметризация делает тест нечитаемым
-
----
-
-## 📁 CONFTEST.PY
-
-### Что это
-
-Специальный файл pytest — фикстуры из него доступны **во всех тестах** без импорта.
-
-### Структура
-
-```python
-# tests/conftest.py
-import pytest
-
-@pytest.fixture
-def numbers():
-    """Тестовые данные"""
-    return {"a": 10, "b": 5}
-
-@pytest.fixture
-def zero():
-    return 0
-
-@pytest.fixture
-def negative():
-    return -3
-```
-
-### Иерархия conftest
-
-```
-tests/
-├── conftest.py          # фикстуры для всех тестов
-├── api/
-│   ├── conftest.py      # фикстуры только для api/
-│   └── test_api.py
-└── ui/
-    ├── conftest.py      # фикстуры только для ui/
-    └── test_ui.py
-```
-
-### autouse=True
-
-```python
-@pytest.fixture(autouse=True)
-def setup_database():
-    """Выполнится автоматически в каждом тесте"""
-    db.connect()
-    yield
-    db.disconnect()
-```
-
----
-
-## 🏷️ МАРКЕРЫ И СЕЛЕКТИВНЫЙ ЗАПУСК
-
-### Встроенные маркеры
-
-```python
-@pytest.mark.skip(reason="Not ready yet")
-def test_not_implemented():
-    pass
-
-@pytest.mark.skipif(sys.platform == "win32", reason="Linux only")
-def test_linux_only():
-    pass
-
-@pytest.mark.xfail(reason="Known bug")
-def test_expected_to_fail():
-    assert False
-```
-
-### Свои маркеры
-
-```python
-# tests/test_api.py
-
-@pytest.mark.api
-def test_get_users():
-    pass
-
-@pytest.mark.smoke
-def test_login():
-    pass
-
-@pytest.mark.slow
-def test_large_dataset():
-    pass
-```
-
-### Запуск по маркеру
+### Отправка кода
 
 ```cmd
-pytest -m api           # только API тесты
-pytest -m smoke         # только smoke тесты
-pytest -m "not slow"    # все кроме slow
-pytest -m "api and not slow"  # комбинация
+# Инициализация (если ещё не сделал)
+git init
+
+# Добавление файлов
+git add .
+
+# Первый коммит
+git commit -m "feat: initial commit with calculator and tests"
+
+# Связь с GitHub (замени YOUR_USERNAME)
+git remote add origin https://github.com/YOUR_USERNAME/python-automation-learning.git
+
+# Переименование ветки
+git branch -M main
+
+# Отправка
+git push -u origin main
 ```
 
-### Запуск по имени
+### Проверка
 
-```cmd
-pytest -k "add"         # все тесты с "add" в имени
-pytest -k "add or multiply"
-pytest -k "not divide"
-```
-
----
-
-## ️ ВСТРОЕННЫЕ ФИКСТУРЫ
-
-| Фикстура | Что даёт | Пример |
-|----------|---------|--------|
-| `tmp_path` | Временная папка (авто-очистка) | `def test_file(tmp_path):` |
-| `tmp_path_factory` | Фабрика временных папок | scope=session |
-| `capfd` | Перехват print() | `captured = capfd.readouterr()` |
-| `caplog` | Перехват логов | `caplog.at_level(logging.WARNING)` |
-| `monkeypatch` | Мокирование ENV | `monkeypatch.setenv("KEY", "value")` |
-
-### Пример: capfd
-
-```python
-def test_print_output(capfd):
-    print("Hello from test!")
-    captured = capfd.readouterr()
-    assert "Hello from test!" in captured.out
-```
-
-### Пример: tmp_path
-
-```python
-def test_write_file(tmp_path):
-    file = tmp_path / "test.txt"
-    file.write_text("Hello")
-    assert file.read_text() == "Hello"
-    # Папка удалится автоматически
-```
+- Открой репозиторий на GitHub
+- Убедись, что файлы появились
+- Проверь, что `venv/` и `__pycache__/` не закоммичены
 
 ---
 
 ## 🗣️ ДЛЯ СОБЕСА
 
-**Что такое фикстуры?**
+**Зачем нужно виртуальное окружение?**
 
-Функции для подготовки окружения тестов. Позволяют вынести setup/teardown в одно место, переиспользовать код и гарантировать очистку даже при падении теста.
+> Чтобы изолировать зависимости проекта от системного Python. Каждый проект имеет свои пакеты в своей папке venv/, что предотвращает конфликты версий.
 
-**Что такое conftest.py?**
+**Чем `pip install` отличается от `pip freeze`?**
 
-Специальный файл, где объявленные фикстуры автоматически доступны во всех тестах без импорта.
+> `install` — устанавливает пакеты, `freeze` — показывает установленные пакеты с версиями (используется для requirements.txt).
 
-**Какие scope у фикстур?**
+**Зачем нужен `.gitignore`?**
 
-function (каждый тест), class (на класс), module (на файл), session (на весь прогон).
+> Чтобы не коммитить файлы, которые генерируются автоматически или содержат секреты: venv/, __pycache__/, .idea/, *.log, .env.
 
-**Зачем нужна параметризация?**
+**Что такое pytest?**
 
-Один тест — много данных. Сокращает код, покрывает больше сценариев, легче поддерживать.
+> Фреймворк для тестирования на Python. Проще unittest: использует обычный `assert` вместо `self.assertEqual()`, имеет фикстуры, параметризацию и богатую экосистему плагинов.
 
-**Что такое маркеры?**
+**Как работает `sys.path.insert` для импортов?**
 
-Теги для группировки тестов. Позволяют запускать выборочно: `pytest -m api`.
+> Добавляет указанную папку в начало списка путей поиска модулей Python. Нужно, когда тесты и исходный код лежат в разных папках.
 
-**Встроенные фикстуры?**
+**Что означает префикс `feat:` в коммите?**
 
-`tmp_path` (временная папка), `capfd` (перехват print), `caplog` (логи), `monkeypatch` (моки ENV).
+> Это конвенция коммитов: `feat:` = новая функция, `fix:` = исправление бага, `docs:` = документация. Помогает читать историю изменений.
 
 ---
 
 ## ❓ ВОПРОСЫ ДЛЯ САМОПРОВЕРКИ
 
-1. Чем `pytest -v` отличается от `pytest -s`?
-2. Зачем нужен `yield` в фикстуре?
-3. Что такое `conftest.py` и чем отличается от обычного импорта?
-4. Как запустить только тесты с маркером `api`?
-5. Когда использовать параметризацию, а когда отдельные тесты?
-6. Что выполнится после `yield`, если тест упал?
-7. Как создать фикстуру, которая выполнится один раз на все тесты?
-8. Чем `tmp_path` лучше `tempfile`?
+1. Как создать виртуальное окружение на Windows?
+2. Как активировать venv в командной строке?
+3. Что делает `pip freeze > requirements.txt`?
+4. Какие файлы обязательно игнорировать в `.gitignore` для Python?
+5. Как запустить тесты с подробным выводом?
+6. Как проверить, какой Python сейчас активен?
+7. Что означает флаг `pytest -x`?
+8. Как добавить все изменённые файлы в Git одной командой?
+9. Что такое `conftest.py` и зачем он нужен?
+10. Как проверить, что файл попал в `.gitignore`?
 
 ---
 
 ## 🔗 ССЫЛКИ
 
+- [Python downloads](https://www.python.org/downloads/)
 - [pytest документация](https://docs.pytest.org)
-- [Fixtures guide](https://docs.pytest.org/en/stable/explanation/fixtures.html)
-- [Parametrize docs](https://docs.pytest.org/en/stable/how-to/parametrize.html)
-- [conftest.py docs](https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files)
-- [Markers docs](https://docs.pytest.org/en/stable/how-to/mark.html)
+- [Git cheat sheet](https://education.github.com/git-cheat-sheet-education.pdf)
+- [GitHub Guides](https://guides.github.com/)
+- [VS Code Python extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+- [PyCharm Community](https://www.jetbrains.com/pycharm/download/)
 
 ---
 
@@ -401,15 +464,18 @@ function (каждый тест), class (на класс), module (на файл
 
 ---
 
-## ✅ ЧЕК-ЛИСТ НЕДЕЛИ 2
+## ✅ ЧЕК-ЛИСТ НЕДЕЛИ 1
 
-- [ ] Понимаю конвенции pytest (именование, запуск)
-- [ ] Понимаю фикстуры и когда использовать
-- [ ] Создал `conftest.py` с фикстурами
-- [ ] Использовал `@pytest.mark.parametrize`
-- [ ] Знаю встроенные фикстуры (tmp_path, capfd, monkeypatch)
-- [ ] Могу запустить тесты по маркеру (`pytest -m api`)
-- [ ] Могу запустить тесты по имени (`pytest -k "add"`)
-- [ ] Тесты читаются как документация (явные данные)
-
----
+- [ ] Python 3.11+ установлен и работает (`python --version`)
+- [ ] VS Code / PyCharm настроен с расширениями
+- [ ] Виртуальное окружение создаётся и активируется
+- [ ] pytest установлен, тесты запускаются (`pytest -v`)
+- [ ] `requirements.txt` создан и актуален
+- [ ] Git установлен, имя и почта настроены
+- [ ] `.gitignore` создан и работает
+- [ ] Проект имеет правильную структуру (src/, tests/)
+- [ ] Написан калькулятор с 5 функциями
+- [ ] Написаны тесты для всех функций
+- [ ] Код загружен на GitHub
+- [ ] README.md написан
+- [ ] Понимаю, зачем нужен `sys.path.insert`
