@@ -3,77 +3,80 @@ import pytest
 import sys
 import os
 
-# Добавляем путь к src (чтобы работал импорт)
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Путь к src
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')
+))
 
-# Импортируем функции из calculator
 from src.calculator import add, subtract, multiply, divide, power
 
 
-class TestAdd:
-    """Тесты для сложения"""
+# ====== ADD ======
+@pytest.mark.parametrize("a, b, expected", [
+    (2, 3, 5),
+    (1, 2, 3),
+    (7, 0, 7),
+    (0, 8, 8),
+    (0, 0, 0),
+    (-5,-10, -15),
+    (5, -5, 0),
+    (6, -9, -3),
+    (-9, 3, -6),
+    (10, -7, 3)
+])
+def test_add(a, b, expected):
+    assert add(a, b) == expected
 
-    def test_add_positive(self, numbers):
-        result = add(numbers["a"], numbers["b"])
-        assert result == 15
-
-    def test_add_with_zero(self, numbers, zero):
-        result = add(numbers["a"], zero)
-        assert result == numbers["a"]
-
-    def test_add_negative(self, numbers, negative):
-        result = add(numbers["a"], negative)
-        assert result == 7
-
-
-class TestSubtract:
-    """Тесты для вычитания"""
-
-    def test_subtract_positive(self, numbers):
-        result = subtract(numbers["a"], numbers["b"])
-        assert result == 5
-
-    def test_subtract_negative_result(self, numbers):
-        result = subtract(numbers["b"], numbers["a"])
-        assert result == -5
-
-
-class TestMultiply:
-    """Тесты для умножения"""
-
-    def test_multiply_positive(self, numbers):
-        result = multiply(numbers["a"], numbers["b"])
-        assert result == 50
-
-    def test_multiply_by_zero(self, numbers, zero):
-        result = multiply(numbers["a"], zero)
-        assert result == 0
+# ===== SUBTRACT =====
+@pytest.mark.parametrize("a,b,expected", [
+    (10, 5, 5),
+    (5, 10, -5),
+    (0, 0, 0),
+    (-5, -5, 0),
+])
+def test_subtract(a, b, expected):
+    assert subtract(a, b) == expected
 
 
-class TestDivide:
-    """Тесты для деления"""
-
-    def test_divide_positive(self, numbers):
-        result = divide(numbers["a"], numbers["b"])
-        assert result == 2
-
-    def test_divide_by_zero(self, numbers, zero):
-        with pytest.raises(ZeroDivisionError):
-            divide(numbers["a"], zero)
-
-    def test_divide_returns_float(self, numbers):
-        result = divide(7, 2)
-        assert result == 3.5
-        assert isinstance(result, float)
+# ===== MULTIPLY =====
+@pytest.mark.parametrize("a,b,expected", [
+    (3, 4, 12),
+    (5, 0, 0),
+    (-2, 5, -10),
+    (-2, -3, 6),
+])
+def test_multiply(a, b, expected):
+    assert multiply(a, b) == expected
 
 
-class TestPower:
-    """Тесты для возведения в степень"""
+# ===== DIVIDE (успешные случаи) =====
+@pytest.mark.parametrize("a,b,expected", [
+    (10, 2, 5),
+    (9, 3, 3),
+    (7, 2, 3.5),
+    (0, 5, 0),
+    (-10, 2, -5),
+])
+def test_divide_success(a, b, expected):
+    assert divide(a, b) == expected
 
-    def test_power_positive(self):
-        result = power(2, 3)
-        assert result == 8
+# ====== DIVIDE (ошибки) ======
+@pytest.mark.parametrize("a, b", [
+    (10, 0),
+    (5, 0),
+    (0, 0),
+    (-7, 0)
+])
+def test_devide_by_zero(a, b):
+    with pytest.raises(ZeroDivisionError):
+        divide(a, b)
 
-    def test_power_zero_exponent(self, numbers):
-        result = power(numbers["a"], 0)
-        assert result == 1
+# ===== POWER =====
+@pytest.mark.parametrize("base,exp,expected", [
+    (2, 3, 8),
+    (5, 0, 1),
+    (2, -1, 0.5),
+    (10, 2, 100),
+])
+def test_power(base, exp, expected):
+    assert power(base, exp) == expected
