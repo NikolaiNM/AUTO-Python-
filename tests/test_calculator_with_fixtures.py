@@ -1,4 +1,6 @@
 # tests/test_calculator.py
+from unittest import result
+
 import pytest
 import sys
 import os
@@ -37,6 +39,16 @@ def test_add(a, b, expected):
 def test_subtract(a, b, expected):
     assert subtract(a, b) == expected
 
+# ====== SUBTRACT with FIXTURES ======
+def test_subtract_fixture_positive(numbers):
+    """Исполняет фикстура numbers"""
+    result = subtract(numbers["a"], numbers["b"])
+    assert result == 5
+
+def test_subtract_fixture_negative(numbers, negative):
+    """Используем 2 фикстуры"""
+    result = subtract(numbers["a"], negative)
+    assert result == 13
 
 # ===== MULTIPLY =====
 @pytest.mark.parametrize("a,b,expected", [
@@ -47,6 +59,12 @@ def test_subtract(a, b, expected):
 ])
 def test_multiply(a, b, expected):
     assert multiply(a, b) == expected
+
+# ===== MULTIPLY with FIXTURES=====
+def test_multiply_fixture_expected_result(numbers, expected_product):
+    """Используем фикстуру с ожидаемым результатом"""
+    result = multiply(numbers["a"], numbers["b"])
+    assert result == expected_product
 
 
 # ===== DIVIDE (успешные случаи) =====

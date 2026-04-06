@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from src.calculator import add, subtract, multiply, divide, power
 
 
+@pytest.mark.smoke
 class TestAdd:
     """Тесты функции сложения"""
 

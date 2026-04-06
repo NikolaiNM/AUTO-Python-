@@ -1,162 +1,125 @@
-Понял проблему! Вот **весь файл целиком БЕЗ обёртки** — просто копируй всё от начала до конца:
-
-# 📓 Заметки: Недели 1-2 — Python Automation QA
+# 📓 Заметки: Неделя 2 — pytest основы
 
 ## 📋 ОГЛАВЛЕНИЕ
 
-**Неделя 1:**
-- [Окружение (Windows)](#неделя-1-окружение-windows)
-- [Git — базовые команды](#неделя-1-git--базовые-команды)
-- [Структура проекта](#неделя-1-структура-проекта)
-- [Первые тесты](#неделя-1-первые-тесты)
-
-**Неделя 2:**
-- [pytest — база](#неделя-2-pytest--база)
-- [Фикстуры](#неделя-2-фикстуры)
-- [Встроенные фикстуры](#неделя-2-встроенные-фикстуры)
-- [Для собеседования](#неделя-2-для-собеседования)
-
----
-
-# НЕДЕЛЯ 1
-
-## ⚙️ ОКРУЖЕНИЕ (Windows)
-
-### Виртуальное окружение
-
-```cmd
-python -m venv venv
-venv\Scripts\activate
-deactivate
-```
-
-### Пакеты
-
-```cmd
-pip install pytest pytest-html
-pip freeze > requirements.txt
-pip install -r requirements.txt
-```
-
-### Проверка
-
-```cmd
-python --version
-pytest --version
-where python
-```
+- [unittest и pytest — что это](#unittest-и-pytest--что-это)
+- [Сравнение unittest vs pytest](#сравнение-unittest-vs-pytest)
+- [pytest — база](#pytest--база)
+- [Фикстуры](#фикстуры)
+- [Параметризация](#параметризация)
+- [conftest.py](#conftestpy)
+- [Маркеры и селективный запуск](#маркеры-и-селективный-запуск)
+- [Для собеседования](#для-собеседования)
+- [Вопросы для самопроверки](#вопросы-для-самопроверки)
+- [Ссылки](#ссылки)
 
 ---
 
-## 📦 GIT — БАЗОВЫЕ КОМАНДЫ
+## 📦 UNITTEST И PYTEST — ЧТО ЭТО
 
-### Инициализация
+### 🔹 unittest
 
-```cmd
-git init
-git add .
-git commit -m "feat: сообщение"
-git push
-```
+Встроенный фреймворк Python для тестирования. Идёт "из коробки".
 
-### Настройка
+**Особенности:**
+- Не требует установки
+- Построен на классах (`unittest.TestCase`)
+- Использует `self.assertEqual()`, `self.assertTrue()`
+- Имеет `setUp()` / `tearDown()`
 
-```cmd
-git config --global user.name "Имя"
-git config --global user.email "email"
-```
-
-### Проверка
-
-```cmd
-git status
-git log --oneline
-```
-
-### .gitignore — что игнорировать
-
-```
-venv/
-__pycache__/
-*.pyc
-.pytest_cache/
-.coverage
-htmlcov/
-*.log
-.env
-.idea/
-.vscode/
-```
-
----
-
-## 📁 СТРУКТУРА ПРОЕКТА
-
-```
-python-automation-learning/
-├── src/
-│   └── calculator.py
-├── tests/
-│   ├── conftest.py
-│   └── test_calculator.py
-├── .gitignore
-├── requirements.txt
-├── README.md
-└── notes/
-    └── week1-2.md
-```
-
----
-
-## 🧪 ПЕРВЫЕ ТЕСТЫ
-
-### calculator.py
+**Пример:**
 
 ```python
-def add(a, b):
-    """Сложение 2ух чисел"""
-    return a + b
+import unittest
 
-def subtract(a, b):
-    """Вычитание 2ух чисел"""
-    return a - b
-
-def multiply(a, b):
-    """Умножение 2ух чисел"""
-    return a * b
-
-def divide(a, b):
-    """Деление 2ух чисел"""
-    if b == 0:
-        raise ZeroDivisionError("Divide by zero")
-    return a / b
-
-def power(base, exponent):
-    """Возведение в степень"""
-    return base ** exponent
+class TestMath(unittest.TestCase):
+    def test_add(self):
+        self.assertEqual(2 + 2, 4)
+    
+    def setUp(self):
+        self.value = 10
 ```
 
-### test_calculator.py
+---
+
+### 🔹 pytest
+
+Сторонний фреймворк — индустриальный стандарт.
+
+**Особенности:**
+- Требует установки: `pip install pytest`
+- Простой `assert` вместо `self.assertEqual()`
+- Фикстуры (`@pytest.fixture`) вместо `setUp/tearDown`
+- Параметризация, маркеры, 1000+ плагинов
+- Умные сообщения об ошибках
+
+**Пример:**
 
 ```python
+import pytest
+
 def test_add():
-    assert add(2, 3) == 5
+    assert 2 + 2 == 4
 
-def test_subtract():
-    assert subtract(5, 3) == 2
+@pytest.fixture
+def value():
+    return 10
 ```
 
 ---
 
-# НЕДЕЛЯ 2
+### 🧭 Когда что использовать
+
+| Ситуация | Выбор | Почему |
+|----------|-------|--------|
+| Новый проект | pytest | Современный, проще поддерживать |
+| Legacy-код | unittest | Уже написан |
+| Собеседование | Знать оба | Спросят различия |
+| Обучение | unittest → pytest | Покажет эволюцию |
+
+---
+
+## 📊 СРАВНЕНИЕ UNITTEST vs PYTEST
+
+| Критерий | unittest | pytest |
+|----------|----------|--------|
+| Синтаксис | Многословный, ООП | Простой, функциональный |
+| Assert | `self.assertEqual()` | `assert` |
+| Setup/Teardown | `setUp()`, `tearDown()` | Фикстуры с `yield` |
+| Параметризация | `subTest()` (неудобно) | `@pytest.mark.parametrize` |
+| Плагины | Ограниченные | 1000+ |
+| Отчёты об ошибках | Базовые | Детальные с сравнением |
+| Запуск | `python -m unittest` | `pytest` |
+| Совместимость | — | Запускает unittest тесты |
+
+---
+
+### Сообщения об ошибках
+
+**unittest:**
+
+```
+AssertionError: 5 != 6
+```
+
+**pytest:**
+
+```
+E       assert 5 == 6
+E        +  where 5 = add(2, 3)
+E         - 6
+E         + 5
+```
+
+---
 
 ## 🧪 PYTEST — БАЗА
 
 ### Конвенции именования
 
-- **Файлы:** `test_*.py` или `*_test.py`
-- **Функции:** `def test_*():`
-- **Классы:** `class Test*` (без `__init__`)
+- Файлы: `test_*.py` или `*_test.py`
+- Функции: `def test_*():`
+- Классы: `class Test*` (без `__init__`)
 
 ### Запуск тестов
 
@@ -179,20 +142,6 @@ pytest --html=report.html # HTML-отчёт
 - `s` = skipped ⏭
 - `x` = xfail 🟣
 
-### Assert vs unittest
-
-**✅ pytest — просто:**
-
-```python
-assert add(2, 3) == 5
-```
-
-**❌ unittest — многословно:**
-
-```python
-self.assertEqual(add(2, 3), 5)
-```
-
 ---
 
 ## 🎁 ФИКСТУРЫ
@@ -211,59 +160,174 @@ def my_fixture():
 
 ### Scope (область видимости)
 
-- `function` (default) — перед каждым тестом
-- `class` — один раз на класс
-- `module` — один раз на файл
-- `session` — один раз на весь прогон
-
-### conftest.py
-
-- ✅ Фикстуры доступны во всех тестах **без импорта**
-- ✅ Лежит в `tests/` или подпапках
-- ❌ **Не делится импортами**, только фикстурами!
-- ❌ `sys.path.insert` не нужен, если нет импортов
+| Scope | Когда создаётся | Пример |
+|-------|----------------|--------|
+| `function` (default) | Перед каждым тестом | Тестовые данные |
+| `class` | Один раз на класс | Тесты одного класса |
+| `module` | Один раз на файл | Дорогостоящие ресурсы |
+| `session` | Один раз на весь прогон | БД, браузер, API |
 
 ### Когда использовать ✅
 
 - Дорогостоящая настройка (БД, браузер, API)
 - Одинаковые сложные данные в 10+ тестах
 - Автоматическая очистка ресурсов
-- Моки и заглушки
 
 ### Когда НЕ использовать ❌
 
 - Простые данные (числа, строки) — пиши явно в тесте
 - Когда фикстура скрывает смысл теста
-- Когда тест становится менее читаемым
 
-### Пример: ХОРОШО
+---
+
+## 🎯 ПАРАМЕТРИЗАЦИЯ
+
+### Базовый синтаксис
 
 ```python
-def test_add_two_positive_numbers():
-    """10 + 5 = 15"""
-    result = add(10, 5)
-    assert result == 15
+import pytest
+
+@pytest.mark.parametrize("a,b,expected", [
+    (2, 3, 5),
+    (10, 5, 15),
+    (-1, 1, 0),
+])
+def test_add(a, b, expected):
+    assert add(a, b) == expected
 ```
 
-### Пример: ПЛОХО
+### Параметризация исключений
 
 ```python
-def test_add(self, numbers):
-    result = add(numbers["a"], numbers["b"])
-    assert result == 15  # ??? Какие числа?
+@pytest.mark.parametrize("a,b", [
+    (10, 0),
+    (5, 0),
+])
+def test_divide_by_zero(a, b):
+    with pytest.raises(ZeroDivisionError):
+        divide(a, b)
+```
+
+### Комбинация параметризаций
+
+```python
+@pytest.mark.parametrize("a", [1, 2, 3])
+@pytest.mark.parametrize("b", [10, 20])
+def test_multiply(a, b):  # 6 прогонов: 3×2
+    assert multiply(a, b) == a * b
+```
+
+### С фикстурами
+
+```python
+@pytest.mark.parametrize("a,b,expected", [
+    (10, 5, 15),
+])
+def test_add_with_fixture(a, b, expected, calc):
+    result = calc.add(a, b)
+    assert result == expected
 ```
 
 ---
 
-## 🛠️ ВСТРОЕННЫЕ ФИКСТУРЫ
+## 📁 CONFTEST.PY
 
-| Фикстура | Что даёт |
-|----------|---------|
-| `tmp_path` | Временная папка (авто-очистка) |
-| `tmp_path_factory` | Фабрика временных папок (session) |
-| `capfd` | Перехват print() |
-| `caplog` | Перехват логов |
-| `monkeypatch` | Мокирование ENV |
+### Что это
+
+Специальный файл — фикстуры доступны во всех тестах без импорта.
+
+### Структура
+
+```python
+# tests/conftest.py
+import pytest
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..')
+))
+
+from src.calculator import add, divide
+
+@pytest.fixture
+def numbers():
+    return {"a": 10, "b": 5}
+```
+
+### Иерархия
+
+```
+tests/
+├── conftest.py          # для всех тестов
+├── api/conftest.py      # только для api/
+└── ui/conftest.py       # только для ui/
+```
+
+### autouse=True
+
+```python
+@pytest.fixture(autouse=True)
+def log_test():
+    print("Тест начался")
+    yield
+    print("Тест завершился")
+```
+
+**Использовать для:** логирования, очистки ресурсов  
+**Не использовать для:** тестовых данных, моков
+
+---
+
+## 🏷️ МАРКЕРЫ И СЕЛЕКТИВНЫЙ ЗАПУСК
+
+### Встроенные маркеры
+
+```python
+@pytest.mark.skip(reason="Не готово")
+def test_future(): ...
+
+@pytest.mark.skipif(sys.platform == "win32", reason="Linux only")
+def test_linux(): ...
+
+@pytest.mark.xfail(reason="Баг #123")
+def test_buggy(): ...
+```
+
+### Свои маркеры
+
+```ini
+# pytest.ini
+[pytest]
+markers =
+    api: тесты API
+    smoke: дымовые тесты
+    slow: медленные тесты
+```
+
+```python
+@pytest.mark.smoke
+@pytest.mark.api
+def test_add():
+    assert add(2, 3) == 5
+```
+
+### Запуск
+
+```cmd
+pytest -m smoke              # только smoke
+pytest -m "not slow"         # всё кроме slow
+pytest -m "api and not slow" # комбинация
+pytest -k "add"              # по имени
+pytest -m api -k "divide"    # маркер + имя
+```
+
+### Отчёты с фильтрацией
+
+```cmd
+pytest -m smoke --html=reports/smoke.html
+pytest -m "not slow" --junitxml=ci-results.xml
+```
 
 ---
 
@@ -277,35 +341,48 @@ def test_add(self, numbers):
 
 Специальный файл, где объявленные фикстуры автоматически доступны во всех тестах без импорта.
 
-**Какие scope у фикстур?**
+**Зачем нужна параметризация?**
 
-function (каждый тест), class (на класс), module (на файл), session (на весь прогон).
+Один тест — много данных. Сокращает код, покрывает больше сценариев, легче поддерживать.
 
 **Почему pytest лучше unittest?**
 
-Меньше бойлерплейта, умные сообщения об ошибках, фикстуры вместо setUp/tearDown, богатая экосистема плагинов.
+Меньше бойлерплейта, читаемый синтаксис (`assert`), фикстуры вместо `setUp/tearDown`, параметризация, 1000+ плагинов, умные ошибки. Совместим с unittest.
+
+**Что такое autouse=True?**
+
+Фикстура выполняется автоматически в каждом тесте. Для логирования, очистки ресурсов.
+
+**Встроенные фикстуры?**
+
+`tmp_path` (временная папка), `capfd` (перехват print), `caplog` (логи), `monkeypatch` (моки ENV).
 
 ---
 
 ## ❓ ВОПРОСЫ ДЛЯ САМОПРОВЕРКИ
 
-1. Чем `pip install` отличается от `pip freeze`?
+1. Чем `pytest -v` отличается от `pytest -s`?
 2. Зачем нужен `yield` в фикстуре?
-3. Почему тесты лучше писать с явными данными?
-4. Как запустить только тесты с "add" в имени?
-5. Что выполнится после `yield`, если тест упал?
-6. Зачем нужен `.gitignore`?
-7. Как называется файл с фикстурами, доступными везде?
+3. Как параметризовать тест с исключением?
+4. Что такое conftest.py и чем отличается от импорта?
+5. Как запустить только тесты с маркером `api`?
+6. Когда использовать autouse, а когда нет?
+7. Как скомбинировать маркер и фильтр по имени?
+8. Что покажет `pytest -k "add and not zero"`?
+9. Чем `tmp_path` лучше `tempfile`?
+10. Как создать фикстуру на всю сессию?
 
 ---
 
 ## 🔗 ССЫЛКИ
 
-- [pytest официальная документация](https://docs.pytest.org)
-- [Fixtures guide](https://docs.pytest.org/en/stable/explanation/fixtures.html)
-- [Parametrize docs](https://docs.pytest.org/en/stable/how-to/parametrize.html)
+- [pytest документация](https://docs.pytest.org)
+- [Parametrize](https://docs.pytest.org/en/stable/how-to/parametrize.html)
+- [Fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html)
+- [conftest.py](https://docs.pytest.org/en/stable/reference/fixtures.html#conftest-py-sharing-fixtures-across-multiple-files)
+- [Markers](https://docs.pytest.org/en/stable/how-to/mark.html)
+- [unittest docs](https://docs.python.org/3/library/unittest.html)
 - [Git cheat sheet](https://education.github.com/git-cheat-sheet-education.pdf)
-- [Python docs](https://docs.python.org/3/)
 
 ---
 
@@ -314,33 +391,33 @@ function (каждый тест), class (на класс), module (на файл
 ### Инсайты
 
 
+
 ### Ошибки и решения
+
 
 
 ### Вопросы для ментора
 
 
+
 ### Время затрачено
 
-- Неделя 1: __ часов
-- Неделя 2: __ часов
+- Всего: __ часов
 
 ---
 
-## ✅ ЧЕК-ЛИСТ
+## ✅ ЧЕК-ЛИСТ НЕДЕЛИ 2
 
-- [ ] Python 3.11+ установлен
-- [ ] Виртуальное окружение работает
-- [ ] pytest установлен, тесты запускаются
-- [ ] Git настроен, код на GitHub
-- [ ] `.gitignore` создан
-- [ ] Понимаю конвенции pytest
+- [ ] Понимаю разницу unittest vs pytest
+- [ ] Знаю конвенции pytest (именование, запуск)
 - [ ] Понимаю фикстуры и когда использовать
-- [ ] Создал `conftest.py`
-- [ ] Тесты читаются как документация
-
----
-
-**Запомнил!** Теперь всегда буду давать заметки именно так — **сырой markdown без обёртки в код-блок**, чтобы ты мог просто скопировать всё целиком.
-
-**Готов к Блоку 3: Параметризация?** 🎯
+- [ ] Создал conftest.py с фикстурами
+- [ ] Использовал @pytest.mark.parametrize
+- [ ] Параметризовал тесты с исключениями
+- [ ] Знаю встроенные фикстуры (tmp_path, capfd)
+- [ ] Настроил pytest.ini с маркерами
+- [ ] Могу запустить по маркеру: `pytest -m api`
+- [ ] Могу запустить по имени: `pytest -k "add"`
+- [ ] Знаю что такое autouse=True
+- [ ] Понимаю иерархию conftest
+- [ ] Могу объяснить различия на собесе

@@ -1,5 +1,12 @@
+# tests/conftest.py
 import pytest
+import sys
+import os
 
+# Добавляем путь к src (чтобы работали импорты)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from src.calculator import add, subtract, multiply, divide, power
 
 @pytest.fixture
 def numbers():
@@ -16,17 +23,16 @@ def negative():
     """Фикстура для теста с отрицательным числом"""
     return -3
 
-@pytest.fixture
-def calc():
-    return Calculator()
 
-# tests/test_calculator.py
-@pytest.mark.parametrize("a,b,expected", [
-    (10, 5, 15),
-    (0, 0, 0),
-    (-5, 5, 0),
-])
-def test_add_with_fixture(a, b, expected, calc):
-    """calc — фикстура из conftest.py"""
-    result = calc.add(a, b)
-    assert result == expected
+# ===== ФИКСТУРЫ С РЕЗУЛЬТАТАМИ =====
+
+@pytest.fixture
+def expected_sum(numbers):
+    """Ожидаемый результат сложения"""
+    return numbers["a"] + numbers["b"]
+
+
+@pytest.fixture
+def expected_product(numbers):
+    """Ожидаемый результат умножения"""
+    return numbers["a"] * numbers["b"]
