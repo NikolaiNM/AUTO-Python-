@@ -1,3 +1,4 @@
 .idea
 assets/
 report.html
+tests/__pycache__/

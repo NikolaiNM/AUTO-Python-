@@ -62,9 +62,14 @@ class TestDivide:
     def test_divide_negative_divisible(self):
         assert divide(-6, 3) == -2
 
+    def test_add_debug(self):
+        result = add(2, 3)
+        print(f"\nResult: {result}")  # \n для переноса строки
+        assert result == 5
+
 
 class TestPower:
     """Тест для функции возведение в степень"""
 
     def test_pow(self):
-        assert pow(3, 2) == 9
+        assert power(3, 2) == 9
